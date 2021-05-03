@@ -18,7 +18,7 @@ class PhotoAvis
     private $id;
 
     /**
-     * @ORM\Column(type="blob")
+     * @ORM\Column(type="string", length=10000)
      */
     private $photo;
 
@@ -55,4 +55,10 @@ class PhotoAvis
 
         return $this;
     }
+
+    public function __toString() 
+    {
+        return (string) $this->photo; 
+    }
+    
 }

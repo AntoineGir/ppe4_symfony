@@ -16,6 +16,8 @@ class AvisType extends AbstractType
             ->add('commentaire')
             ->add('idClient')
             ->add('idTheme')
+            ->add('idImage')
+
         ;
     }
 
@@ -25,4 +27,6 @@ class AvisType extends AbstractType
             'data_class' => Avis::class,
         ]);
     }
+
+
 }

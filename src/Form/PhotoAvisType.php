@@ -23,4 +23,6 @@ class PhotoAvisType extends AbstractType
             'data_class' => PhotoAvis::class,
         ]);
     }
+
+    
 }
