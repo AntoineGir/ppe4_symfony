@@ -20,12 +20,12 @@ class Avis
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable = true)
      */
     private $note;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable = true)
      */
     private $commentaire;
 

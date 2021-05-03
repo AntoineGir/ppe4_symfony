@@ -238,7 +238,21 @@
   switch (value) { 
     case "save":
       swal("Enregistrer!", "success");
-      retourlist(pictures);
+      //retourlist(pictures);
+
+      let user {
+        Request: 'Test'
+      }
+  let Response = await fetch('https://127.0.0.1:8000/photo/avis/newPicture', 
+  {
+    methods: 'POST',
+      headers: {
+    'Content-Type': 'application/json;charset=utf-8'
+              },
+    body: JSON.stringify(user)
+  });
+  }
+  )
       break;
   }
 });
@@ -256,5 +270,7 @@
   // once loading is complete.
   window.addEventListener('load', startup, false);
 })();
+
+
 
 {% endblock %}

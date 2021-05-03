@@ -48,6 +48,20 @@ class PhotoAvisController extends AbstractController
         ]);
     }
 
+    /*
+    *@Route("/newPicture", methods={"POST})
+    */
+    public function newPicture(Request $photo): Response
+    {
+        $photoAvi = new PhotoAvis();
+        $photoAvi->setPhoto($photo);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($photoAvi);
+        $entityManager->flush();
+    }
+
+
+
     /**
      * @Route("/{id}", name="photo_avis_show", methods={"GET"})
      */
