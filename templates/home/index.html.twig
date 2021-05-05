@@ -5,6 +5,7 @@
 
 {% block stylesheets %}
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 {% endblock %}
 
 
@@ -69,6 +70,13 @@
     grid-area: mid;
 }
 
+.down{
+  grid-area: 3/2;
+  display:flex;
+  align-items:center;
+  justify-content: center;
+}
+
 .btn-Ajouter{
     margin-top: 10vh;
 }
@@ -102,7 +110,14 @@
         <div class="mid">
           <div class="btn-Ajouter">
             <div>
-              <input type="button" class="btn" id="clickMe"/>
+              <input type="button" class="btn" id="clickAddPicture"/>
+            </div>
+          </div>
+        </div>
+        <div class="down">
+          <div class="terminer">
+            <div>
+              <input type="button" class="btn-terminer" onclick="clickFinish();" value="terminer"/>
             </div>
           </div>
         </div>
@@ -112,12 +127,155 @@
 
 {% block javascripts %}
 
+  let commentaire;
+  let note;
 
-  function loadStart()
+  //list images enregistrer
+  let listPictures = [];
+
+  let resultatAvis;
+
+
+  function clickFinish()
   {
-    //créer un avis vide
-    //post
+    swal({
+      title: "Avis-commentaire",
+      text:"commentaire :",
+      content: "input",
+      content: {
+          element: "input",
+          attributes: {
+              type: "input",
+          }
+      }
+    })
+  .then((value) => {
+    commentaire=value;
+    console.log(commentaire);
+    swal({
+      title: "Avis-note",
+      text:"note :",
+      content: "input",
+      content: {
+          element: "input",
+          attributes: {
+              type: "number",
+          }
+      }
+    })
+    .then((value)=>{
+      note=value;
+      console.log(note);
+
+      swal({
+    title: "Enregistrements",
+    text: "voulez-vous garder la photo ?",
+    buttons: {
+      cancel: "Cancel",
+      catch: {
+        text: "oui",
+        value: "save",
+        },
+      },
+    })
+    .then((value) => {
+      switch (value) { 
+      case "save":
+        console.log("enregistrer");
+        addAvis(note, commentaire);
+        //recupère l'id du dernier avis que viens de créer
+        listTousLesAvis();
+
+        //envoyer les photos avec le bon id avis
+        bouclePhotoPrise();
+
+        break;
+      default:
+        console.log(listPictures.length);
+        note = null;
+        commentaire = null;
+      }
+    });
+
+    })
+  });
+
   }
+
+
+  //ajout un avis avec une note et un commentaire dans la bdd
+  function addAvis(note, commentaire)
+  {
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  var raw = JSON.stringify({"note":note,"commentaire":commentaire});
+  raw = raw.replace('"'+note+'"', note);
+  
+  //console.log(raw);
+
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+  
+  fetch("https://127.0.0.1:8000/api/avis", requestOptions)
+    .then(response => response.text())
+    .catch(error => console.log('error', error));
+  }
+
+function listTousLesAvis()
+{
+  var requestOptions = {
+  method: 'GET',
+  redirect: 'follow'
+  };
+
+  fetch("https://127.0.0.1:8000/api/avis/", requestOptions)
+  .then(response => response.json())
+  .then(result => listAvisConnaitreIdAvisDuDernier(result))
+  .catch(error => console.log('error', error));
+
+}
+
+  
+function listAvisConnaitreIdAvisDuDernier(result)
+{
+  resultatAvis = result;
+  let total = resultatAvis["hydra:member"].length;
+  total = total - 1;
+  resultatAvis = resultatAvis["hydra:member"][total].id;
+}
+
+
+function bouclePhotoPrise()
+{
+  listPictures.forEach(element => EnregistrementPhotoBddAvecIdAvis(element));
+}
+
+function EnregistrementPhotoBddAvecIdAvis(element)
+{
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+    let photo_avisId = "/api/photo_avis/" + resultatAvis;
+
+    var raw = JSON.stringify({"@id":resultatAvis,"photo":element});
+
+    var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  fetch("https://127.0.0.1:8000/api/photo_avis", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
+}
 
 
  (function() {
@@ -141,13 +299,12 @@
   var startbutton = null;
 
 
-  //list images enregistrer
-  let listPictures = [];
+ 
 
   function startup() {
     video = document.getElementById('video');
     canvas = document.getElementById('canvas');
-    startbutton = document.getElementById('clickMe');
+    startbutton = document.getElementById('clickAddPicture');
 
     navigator.mediaDevices.getUserMedia({video: true, audio: false})
     .then(function(stream) {
@@ -233,7 +390,7 @@
       switch (value) { 
       case "save":
         swal("Enregistrer!", "success");
-        //retourlist(pictures);
+        retourlist(pictures);
         break;
       }
     });
@@ -243,7 +400,7 @@
   {
     
     listPictures.push(pictures);
-    console.log(listPictures[0]);
+    //console.log(listPictures[0]);
   }
 
   // Set up our event listener to run the startup process
