@@ -185,13 +185,11 @@
         addAvis(note, commentaire);
         //recupère l'id du dernier avis que viens de créer
         listTousLesAvis();
-
+        
         //envoyer les photos avec le bon id avis
-        bouclePhotoPrise();
 
         break;
       default:
-        console.log(listPictures.length);
         note = null;
         commentaire = null;
       }
@@ -247,6 +245,7 @@ function listAvisConnaitreIdAvisDuDernier(result)
   let total = resultatAvis["hydra:member"].length;
   total = total - 1;
   resultatAvis = resultatAvis["hydra:member"][total].id;
+  bouclePhotoPrise();
 }
 
 
@@ -260,9 +259,10 @@ function EnregistrementPhotoBddAvecIdAvis(element)
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-    let photo_avisId = "/api/photo_avis/" + resultatAvis;
+    let photo_avisId = "/api/avis/" + resultatAvis;
+    var raw = JSON.stringify({"photo":element, "avis":photo_avisId});
 
-    var raw = JSON.stringify({"@id":resultatAvis,"photo":element});
+    console.log(raw);
 
     var requestOptions = {
     method: 'POST',
