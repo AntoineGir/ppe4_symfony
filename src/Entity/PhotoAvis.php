@@ -20,7 +20,7 @@ class PhotoAvis
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=10000)
+     * @ORM\Column(type="string", length=60000)
      */
     private $photo;
 
